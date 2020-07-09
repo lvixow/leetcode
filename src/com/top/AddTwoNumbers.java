@@ -1,51 +1,30 @@
 package com.top;
 
-
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Stack;
 
 /**
  * author:w_liangwei
- * date:2020/7/8
+ * date:2020/7/9
  * Description:
  */
-public class Solution {
+public class AddTwoNumbers {
     public static void main(String[] args) {
-        int target = 26;
-        int[] nums = {2, 7, 11,15};
-        System.out.println(Arrays.toString(twoSum(nums, target)));
-
         // 输入：(2 -> 4 -> 3) + (5 -> 6 -> 4)
         //输出：7 -> 0 -> 8
         //原因：342 + 465 = 807
-        ListNode l1_node1 = new ListNode(2);
-        ListNode l1_node2 = new ListNode(4);
-        ListNode l1_node3 = new ListNode(3);
-        l1_node1.next = l1_node2;
-        l1_node2.next = l1_node3;
+        ListNode l1_node1 = new ListNode(0);
+//        ListNode l1_node2 = new ListNode(4);
+//        ListNode l1_node3 = new ListNode(3);
+//        l1_node1.next = l1_node2;
+//        l1_node2.next = l1_node3;
 
-        ListNode l2_node1 = new ListNode(5);
-        ListNode l2_node2 = new ListNode(6);
-        ListNode l2_node3 = new ListNode(4);
+        ListNode l2_node1 = new ListNode(7);
+        ListNode l2_node2 = new ListNode(3);
+//        ListNode l2_node3 = new ListNode(4);
         l2_node1.next = l2_node2;
-        l2_node2.next = l2_node3;
+//        l2_node2.next = l2_node3;
 
-        addTwoNumbers(l1_node1, l2_node1).print();
-    }
-
-    public static int[] twoSum(int[] nums, int target) {
-        //存放<数值---索引>用于减少查找次数
-        Map<Integer, Integer> map = new HashMap<>();
-        for (int i = 0; i < nums.length; i++) {
-            int anotherNum = target - nums[i];
-            if (map.containsKey(anotherNum)) {
-                return new int[]{i, map.get(anotherNum)};
-            }
-            map.put(nums[i], i);
-        }
-        throw new IllegalArgumentException("No two sum solution");
+        addTwoNumbers2(l1_node1, l2_node1).print();
     }
 
 
@@ -125,10 +104,45 @@ public class Solution {
         if (carryBitFlag) {
             temp.next = new ListNode(1);
         }
-
         return resultListNode;
     }
+
+
+    public static ListNode addTwoNumbers2(ListNode l1, ListNode l2) {
+        //创建两个指针分别指向两个链表用于相加
+        ListNode q = l1;
+        ListNode p = l2;
+        //创建进位标识
+        int carry = 0;
+        //创建头结点，方便返回
+        ListNode head = new ListNode(0);
+        //记录当前节点，方便组成新的链表
+        ListNode current = head;
+        while (q != null || p != null) {
+            //对下一个待处理节点为空的处理
+            int q_val = q == null ? 0 : q.val;
+            int p_val = p == null ? 0 : p.val;
+            //本应该从各位开始加从后往前进位，但是由于链表是逆序所以相应的要往后进位就相当于实际计算时的往前进位
+            int sum = carry + q_val + p_val;
+            //相加后的值如果超过10则进位
+            carry = sum / 10;
+            //当前位置的值
+            sum = sum % 10;
+            //组成结果链表
+            current.next = new ListNode(sum);
+            current = current.next;
+            //移动相加的指针,对当前节点为空的处理
+            if (q != null) q = q.next;
+            if (p != null) p = p.next;
+        }
+        //完成相加后的最后一位的进位
+        if (carry > 0) {
+            current.next = new ListNode(1);
+        }
+        return head.next;
+    }
 }
+
 
 
 class ListNode {
@@ -153,4 +167,4 @@ class ListNode {
             temp = temp.next;
         }
     }
- }
+}
