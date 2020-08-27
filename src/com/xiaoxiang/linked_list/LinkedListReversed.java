@@ -54,6 +54,20 @@ public class LinkedListReversed {
         node6C.next = node7C;
         node7C.next = node3C;
 
+        //构建用于切分的链表
+        ListNode node1D = new ListNode(1);
+        ListNode node2D = new ListNode(4);
+        ListNode node3D = new ListNode(3);
+        ListNode node4D = new ListNode(2);
+        ListNode node5D= new ListNode(5);
+        ListNode node6D = new ListNode(2);
+
+        node1D.next = node2D;
+        node2D.next = node3D;
+        node3D.next = node4D;
+        node4D.next = node5D;
+        node5D.next = node6D;
+
 
         //反转整个链表
 //        ListNode.print(node1);
@@ -69,8 +83,43 @@ public class LinkedListReversed {
 //        ListNode intersectionNode = getIntersectionNode(node1, node1B);
 //        System.out.println(intersectionNode);
 
-        ListNode detectCycle = detectCycle(node1C);
-        System.out.println(detectCycle);
+//        ListNode detectCycle = detectCycle(node1C);
+//        System.out.println(detectCycle);
+
+        ListNode partition = partition(node1D, 4);
+        ListNode.print(partition);
+    }
+
+    /**
+     * @auther 梁伟
+     * @Description 给定一个链表和一个特定值 x，对链表进行分隔，使得所有小于 x 的节点都在大于或等于 x 的节点之前。
+     * 你应当保留两个分区中每个节点的初始相对位置。
+     *  输入: head = 1->4->3->2->5->2, x = 3
+     *  输出: 1->2->2->4->3->5
+     * @Date 2020/8/28 7:04
+     * @Param [head, x] 链表头节点，作为切分点的值
+     * @return com.xiaoxiang.linked_list.ListNode
+     **/
+    public static ListNode partition(ListNode head, int x) {
+        //创建两个临时头节点，分别用来存放比切分点大的和比切分点小的
+        ListNode lessHead = new ListNode(Integer.MAX_VALUE);
+        ListNode moreHead = new ListNode(Integer.MAX_VALUE);
+        ListNode result = lessHead;
+        ListNode moreHead2 = moreHead;
+
+        while (head != null) {
+            ListNode temp = head.next;
+            if (head.val >= 3) {
+                moreHead.next = head;
+                moreHead = head;
+            } else {
+                lessHead.next = head;
+                lessHead = head;
+            }
+            head = temp;
+        }
+        lessHead.next = moreHead2.next;
+        return result.next;
     }
 
 
