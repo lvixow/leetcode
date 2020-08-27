@@ -33,8 +33,8 @@ public class LinkedListReversed {
 
         System.out.println();
         System.out.println("==============================================================");
-        reverseBetween(node1, 0,5);
-        ListNode.print(node1);
+        ListNode reverseBetween = reverseBetween(node1, 2, 5);
+        ListNode.print(reverseBetween);
     }
 
     /**
@@ -83,8 +83,11 @@ public class LinkedListReversed {
         if (preHead != null) {
             //将反转后前半部分与原来的链表接上
             preHead.next = newHead;
+            return node;
+        } else {
+            //当是从头结点开始逆序的话，原先传入的头结点已经被逆序到最后，如果还返回原来的头结点就会导致只能看到原来的头结点和原来链表的剩余部分，前半部分节点从而丢失
+            return newHead;
         }
-        return node;
     }
 
 
