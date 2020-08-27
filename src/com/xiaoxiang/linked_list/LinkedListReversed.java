@@ -1,6 +1,9 @@
 package com.xiaoxiang.linked_list;
 
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * @Date 2020/8/26 6:38
  * @Auther 梁伟
@@ -25,7 +28,7 @@ public class LinkedListReversed {
         node6.next = node7;
         node7.next = node8;
 
-        //用于构建新链表
+        //用于构建相交链表
         ListNode node1B = new ListNode(2);
         ListNode node2B = new ListNode(4);
         ListNode node3B = new ListNode(6);
@@ -33,6 +36,23 @@ public class LinkedListReversed {
         node1B.next = node2B;
         node2B.next = node3B;
         node3B.next = node7;
+
+        //构建成环链表
+        ListNode node1C = new ListNode(1);
+        ListNode node2C = new ListNode(2);
+        ListNode node3C = new ListNode(3);
+        ListNode node4C = new ListNode(4);
+        ListNode node5C= new ListNode(5);
+        ListNode node6C = new ListNode(6);
+        ListNode node7C = new ListNode(7);
+
+        node1C.next = node2C;
+        node2C.next = node3C;
+        node3C.next = node4C;
+        node4C.next = node5C;
+        node5C.next = node6C;
+        node6C.next = node7C;
+        node7C.next = node3C;
 
 
         //反转整个链表
@@ -46,9 +66,54 @@ public class LinkedListReversed {
 //        ListNode reverseBetween = reverseBetween(node1, 2, 5);
 //        ListNode.print(reverseBetween);
 
-        ListNode intersectionNode = getIntersectionNode(node1, node1B);
-        System.out.println(intersectionNode);
+//        ListNode intersectionNode = getIntersectionNode(node1, node1B);
+//        System.out.println(intersectionNode);
+
+        ListNode detectCycle = detectCycle(node1C);
+        System.out.println(detectCycle);
     }
+
+
+    /**
+     * 使用快慢指针跑，当两个指针相遇即有环。根据数学推理，从相遇节点和起始节点同时跑，相同的节点即为成环节点
+     * @auther 梁伟
+     * @Description 如果链表有环返回成环的节点，否则返回null
+     * @Date 2020/8/28 5:55
+     * @Param [head]
+     * @return ListNode
+     **/
+    public static ListNode detectCycle(ListNode head) {
+        //创建快慢指针
+        ListNode slow = head;
+        ListNode fast = head;
+        ListNode meet = null;
+
+        //寻找相遇节点
+        do {
+            //快慢指针都走一步
+            slow = slow.next;
+            fast = fast.next;
+            if (fast != null) {
+                //快指针再走一步
+                fast = fast.next;
+            }
+            //如果节点没有环，则可以被跑完。如果节点有环，则slow和fast会在同一节点相遇
+        } while (slow != null && fast != null && slow != fast);
+
+        //因为fast节点最先跑完一个完整的链表，所以它是最快发现链表是否成环的
+        if (fast == null) {
+            return null;
+        }
+        meet = fast;
+        //根据数学推理，从meet节点和head节点同时跑，相交的节点即为成环节点
+        while (meet != head) {
+            meet = meet.next;
+            head = head.next;
+        }
+        return meet;
+    }
+
+
 
     /**
      * @auther 梁伟
@@ -184,8 +249,10 @@ class ListNode {
 
     public static void print(ListNode root) {
         ListNode curr = root;
-        while (curr != null) {
+        List<ListNode> list = new ArrayList<>();
+        while (curr != null && !list.contains(curr)) {
             System.out.print(curr.val + "\t");
+            list.add(curr);
             curr = curr.next;
         }
     }
