@@ -25,16 +25,74 @@ public class LinkedListReversed {
         node6.next = node7;
         node7.next = node8;
 
+        //用于构建新链表
+        ListNode node1B = new ListNode(2);
+        ListNode node2B = new ListNode(4);
+        ListNode node3B = new ListNode(6);
+
+        node1B.next = node2B;
+        node2B.next = node3B;
+        node3B.next = node7;
+
+
         //反转整个链表
-        ListNode.print(node1);
-        System.out.println();
+//        ListNode.print(node1);
+//        System.out.println();
 //        ListNode reverse = reverse(node1);
 //        ListNode.print(reverse);
 
-        System.out.println();
-        System.out.println("==============================================================");
-        ListNode reverseBetween = reverseBetween(node1, 2, 5);
-        ListNode.print(reverseBetween);
+//        System.out.println();
+//        System.out.println("==============================================================");
+//        ListNode reverseBetween = reverseBetween(node1, 2, 5);
+//        ListNode.print(reverseBetween);
+
+        ListNode intersectionNode = getIntersectionNode(node1, node1B);
+        System.out.println(intersectionNode);
+    }
+
+    /**
+     * @auther 梁伟
+     * @Description 求两个链表的相交节点
+     * @Date 2020/8/28 5:22
+     * @Param [headA, headB] 两个链表的头节点
+     * @return com.xiaoxiang.linked_list.ListNode
+     **/
+    public static ListNode getIntersectionNode(ListNode headA, ListNode headB) {
+        int lengthA = headA.getLength();
+        int lengthB = headB.getLength();
+
+        //比较两个链表的长度，并将较长的链表移动到和较短链表相同节点个数的起始位置
+        if (lengthA > lengthB) {
+            headA = forwardLongList(headA, lengthA - lengthB);
+        } else {
+            headB = forwardLongList(headB, lengthB - lengthA);
+        }
+
+        //两个长度相同的链表同时跑，节点的地址值相同时即为同一个节点
+        while (headA != null && headB != null) {
+            if (headA == headB) {
+                return headA;
+            }
+            headA = headA.next;
+            headB = headB.next;
+        }
+        return null;
+    }
+
+
+    /**
+     * @auther 梁伟
+     * @Description 返回移动了指定个数节点的链表
+     * @Date 2020/8/28 5:38
+     * @Param [start, num] 起始节点，移动的节点个数
+     * @return com.xiaoxiang.linked_list.ListNode
+     **/
+    public static ListNode forwardLongList(ListNode start, int num) {
+        while (start != null && num > 0) {
+            num--;
+            start = start.next;
+        }
+        return start;
     }
 
     /**
@@ -130,5 +188,22 @@ class ListNode {
             System.out.print(curr.val + "\t");
             curr = curr.next;
         }
+    }
+
+    public int getLength() {
+        int count = 0;
+        ListNode curr = this;
+        while (curr != null) {
+            count++;
+            curr = curr.next;
+        }
+        return count;
+    }
+
+    @Override
+    public String toString() {
+        return "ListNode{" +
+                "val=" + val +
+                '}';
     }
 }
