@@ -13,7 +13,7 @@ import java.util.Map;
  */
 public class LinkedListReversed {
     public static void main(String[] args) {
-        ListNode node1 = new ListNode(1);
+        /*ListNode node1 = new ListNode(1);
         ListNode node2 = new ListNode(2);
         ListNode node3 = new ListNode(3);
         ListNode node4 = new ListNode(4);
@@ -30,8 +30,19 @@ public class LinkedListReversed {
         node6.next = node7;
         node7.next = node8;
 
+        //反转整个链表
+        ListNode.print(node1);
+        System.out.println();
+        ListNode reverse = reverse(node1);
+        ListNode.print(reverse);
+
+        //区间反转
+        ListNode reverseBetween = reverseBetween(node1, 2, 5);
+        ListNode.print(reverseBetween);*/
+
+
         //用于构建相交链表
-        ListNode node1B = new ListNode(2);
+/*        ListNode node1B = new ListNode(2);
         ListNode node2B = new ListNode(4);
         ListNode node3B = new ListNode(6);
 
@@ -39,8 +50,11 @@ public class LinkedListReversed {
         node2B.next = node3B;
         node3B.next = node7;
 
+        ListNode intersectionNode = getIntersectionNode(node1, node1B);
+        System.out.println(intersectionNode);*/
+
         //构建成环链表
-        ListNode node1C = new ListNode(1);
+        /*ListNode node1C = new ListNode(1);
         ListNode node2C = new ListNode(2);
         ListNode node3C = new ListNode(3);
         ListNode node4C = new ListNode(4);
@@ -56,8 +70,13 @@ public class LinkedListReversed {
         node6C.next = node7C;
         node7C.next = node3C;
 
+        ListNode detectCycle = detectCycle(node1C);
+        System.out.println(detectCycle);*/
+
+
+
         //构建用于切分的链表
-        ListNode node1D = new ListNode(1);
+       /*ListNode node1D = new ListNode(1);
         ListNode node2D = new ListNode(4);
         ListNode node3D = new ListNode(3);
         ListNode node4D = new ListNode(2);
@@ -70,8 +89,13 @@ public class LinkedListReversed {
         node4D.next = node5D;
         node5D.next = node6D;
 
+        ListNode partition = partition(node1D, 3);
+        ListNode.print(partition);*/
+
+
+
         //用于构建深度克隆链表
-        ListNode node1E = new ListNode(6);
+        /*ListNode node1E = new ListNode(6);
         ListNode node2E = new ListNode(3);
         ListNode node3E = new ListNode(1);
         ListNode node4E = new ListNode(7);
@@ -87,31 +111,118 @@ public class LinkedListReversed {
         node3E.random = node3E;
         node5E.random = node4E;
 
-
-        //反转整个链表
-//        ListNode.print(node1);
-//        System.out.println();
-//        ListNode reverse = reverse(node1);
-//        ListNode.print(reverse);
-
-//        System.out.println();
-//        System.out.println("==============================================================");
-//        ListNode reverseBetween = reverseBetween(node1, 2, 5);
-//        ListNode.print(reverseBetween);
-
-//        ListNode intersectionNode = getIntersectionNode(node1, node1B);
-//        System.out.println(intersectionNode);
-
-//        ListNode detectCycle = detectCycle(node1C);
-//        System.out.println(detectCycle);
-
-//        ListNode partition = partition(node1D, 3);
-//        ListNode.print(partition);
-
-
         ListNode copyRandomList = copyRandomList(node1E);
-        ListNode.print(copyRandomList);
+        ListNode.print(copyRandomList);*/
 
+
+        //构建链表用于合并升序链表
+/*        ListNode node1F = new ListNode(1);
+        ListNode node2F = new ListNode(4);
+        ListNode node3F = new ListNode(6);
+
+        ListNode node4F = new ListNode(0);
+        ListNode node5F = new ListNode(5);
+        ListNode node6F = new ListNode(7);
+
+        node1F.next = node2F;
+        node2F.next = node3F;
+        node4F.next = node5F;
+        node5F.next = node6F;
+
+        ListNode mergeTwoLists = mergeTwoLists(node1F, node4F);
+        ListNode.print(mergeTwoLists);*/
+
+
+        //构建用于合并k个升序链表的集合
+        ListNode node1G = new ListNode(1);
+        ListNode node2G = new ListNode(4);
+        ListNode node3G = new ListNode(5);
+
+        node1G.next = node2G;
+        node2G.next = node3G;
+
+        ListNode node4G = new ListNode(1);
+        ListNode node5G = new ListNode(3);
+        ListNode node6G = new ListNode(4);
+
+        node4G.next = node5G;
+        node5G.next = node6G;
+
+        ListNode node7G = new ListNode(2);
+        ListNode node8G = new ListNode(6);
+
+        node7G.next = node8G;
+
+        ListNode[] lists = {node1G, node4G, node7G};
+        ListNode listNode = mergeKLists(lists);
+        ListNode.print(listNode);
+    }
+
+    /**
+     * 采用分治法,先分到2个链表，然后调用两个链表合并函数进行两两合并
+     * 将所有升序链表合并到一个升序链表中，返回合并后的链表
+     * 输入：lists = [[1,4,5],[1,3,4],[2,6]]
+     * 输出：[1,1,2,3,4,4,5,6]
+     * @param lists 所有要合并链表的头节点，长度是多少就有多少个链表
+     * @return
+     */
+    public static ListNode mergeKLists(ListNode[] lists) {
+        //归并到最后只剩下一个节点的链表，说明完成了合并
+        if (lists.length == 1) {
+            return lists[0];
+        }
+        //只剩下两个链表，直接进行合并
+        if (lists.length == 2) {
+            mergeTwoLists(lists[0], lists[1]);
+        }
+        //当所有链表被切分到只有1个或2个链表的时候即可完成合并。所以需要切分减小入参调用的规模。分治
+        int mid = lists.length / 2;
+        ListNode[] list1 = new ListNode[mid];
+        ListNode[] list2 = new ListNode[lists.length - mid];
+
+        for (int i = 0; i < lists.length; i++) {
+            if (i < mid) {
+                list1[i] = lists[i];
+            } else {
+                list2[i - mid] = lists[i];
+            }
+        }
+        //返回切分后的结果
+        ListNode l1 = mergeKLists(list1);
+        ListNode l2 = mergeKLists(list2);
+
+        //合并
+        return mergeTwoLists(l1, l2);
+    }
+
+
+    /**
+     * 将两个升序链表合并为一个新的升序链表并返回。新链表是通过拼接给定的两个链表的所有节点组成的
+     * @param l1
+     * @param l2
+     * @return
+     */
+    public static ListNode mergeTwoLists(ListNode l1, ListNode l2) {
+        ListNode tempHead = new ListNode(Integer.MAX_VALUE);
+        ListNode result = tempHead;
+        while (l1 != null && l2 != null) {
+            if (l1.val <= l2.val) {
+                tempHead.next = l1;
+                l1 = l1.next;
+            } else {
+                tempHead.next = l2;
+                l2 = l2.next;
+            }
+            tempHead = tempHead.next;
+        }
+
+        //两个链表长度不等时，将其中一个剩余链表接上
+        if (l1 != null) {
+            tempHead.next = l1;
+        } else if (l2 != null) {
+            tempHead.next = l2;
+        }
+        return result.next;
     }
 
 
@@ -375,7 +486,16 @@ class ListNode {
     ListNode next;
     ListNode random;
 
-    ListNode(int x) { val = x; }
+    ListNode() {}
+
+    ListNode(int val) {
+        this.val = val;
+    }
+
+    ListNode(int val, ListNode next) {
+        this.val = val;
+        this.next = next;
+    }
 
     public static void print(ListNode root) {
         ListNode curr = root;
@@ -385,6 +505,7 @@ class ListNode {
             list.add(curr);
             curr = curr.next;
         }
+        System.out.println();
     }
 
     public int getLength() {
