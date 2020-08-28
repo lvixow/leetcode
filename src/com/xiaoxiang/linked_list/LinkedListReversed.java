@@ -86,7 +86,7 @@ public class LinkedListReversed {
 //        ListNode detectCycle = detectCycle(node1C);
 //        System.out.println(detectCycle);
 
-        ListNode partition = partition(node1D, 4);
+        ListNode partition = partition(node1D, 3);
         ListNode.print(partition);
     }
 
@@ -104,12 +104,14 @@ public class LinkedListReversed {
         //创建两个临时头节点，分别用来存放比切分点大的和比切分点小的
         ListNode lessHead = new ListNode(Integer.MAX_VALUE);
         ListNode moreHead = new ListNode(Integer.MAX_VALUE);
+        //备份初始lessHead和moreHead用于返回结果
         ListNode result = lessHead;
-        ListNode moreHead2 = moreHead;
+        ListNode moreHeadBackup = moreHead;
 
+        //将链表中的每一个节点分别挂到lessHead和moreHead所在链表
         while (head != null) {
             ListNode temp = head.next;
-            if (head.val >= 3) {
+            if (head.val >= x) {
                 moreHead.next = head;
                 moreHead = head;
             } else {
@@ -118,7 +120,8 @@ public class LinkedListReversed {
             }
             head = temp;
         }
-        lessHead.next = moreHead2.next;
+        //将lessHead和moreHead连接
+        lessHead.next = moreHeadBackup.next;
         return result.next;
     }
 
