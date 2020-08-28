@@ -2,7 +2,9 @@ package com.xiaoxiang.linked_list;
 
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @Date 2020/8/26 6:38
@@ -68,6 +70,23 @@ public class LinkedListReversed {
         node4D.next = node5D;
         node5D.next = node6D;
 
+        //用于构建深度克隆链表
+        ListNode node1E = new ListNode(6);
+        ListNode node2E = new ListNode(3);
+        ListNode node3E = new ListNode(1);
+        ListNode node4E = new ListNode(7);
+        ListNode node5E = new ListNode(2);
+
+        node1E.next = node2E;
+        node2E.next = node3E;
+        node3E.next = node4E;
+        node4E.next = node5E;
+
+        node1E.random = node3E;
+        node2E.random = node4E;
+        node3E.random = node3E;
+        node5E.random = node4E;
+
 
         //反转整个链表
 //        ListNode.print(node1);
@@ -86,9 +105,66 @@ public class LinkedListReversed {
 //        ListNode detectCycle = detectCycle(node1C);
 //        System.out.println(detectCycle);
 
-        ListNode partition = partition(node1D, 3);
-        ListNode.print(partition);
+//        ListNode partition = partition(node1D, 3);
+//        ListNode.print(partition);
+
+
+        ListNode copyRandomList = copyRandomList(node1E);
+        ListNode.print(copyRandomList);
+
     }
+
+
+    /**
+     * 通过构建节点编号和随机节点的map，来构建随机指针
+     * @param head
+     * @return
+     */
+    public static ListNode copyRandomList(ListNode head) {
+        //创建用于记录原链表节点对应的编号，数据结构：当前节点地址---节点编号
+        Map<ListNode, Integer> numMap = new HashMap<>();
+        //记录新链表，节点编号--地址
+        Map<Integer, ListNode> newNumMap = new HashMap<>();
+        //新链表头节点，方便构建新链表
+        ListNode preNewHead = new ListNode(Integer.MAX_VALUE);
+        //备份新链表起始位置，用于返回结果
+        ListNode result = preNewHead;
+        ListNode listNode;
+        int index = 0;
+
+        ListNode curr = head;
+        while (curr != null) {
+            //构建新链表
+            listNode = new ListNode(curr.val);
+            preNewHead.next = listNode;
+            preNewHead = listNode;
+            //记录旧链表的节点地址--编号映射
+            numMap.put(curr, index);
+            //记录新链表编号--节点地址
+            newNumMap.put(index, listNode);
+            index++;
+            curr = curr.next;
+        }
+
+        //两个链表都从头开始跑，构建random指针
+        curr = head;
+        ListNode currNewList = result.next;
+        while (curr != null) {
+            //获取原链表节点对应的random节点
+            ListNode oldRandomNode = curr.random;
+            //从原链表中获取random节点编号
+            Integer randomNum = numMap.get(oldRandomNode);
+            //经过以上两部我们就可以知道当前节点对应的random节点的编号,再通过newNumMap用编号获取新链表对应的random节点建立关联
+            currNewList.random = newNumMap.get(randomNum);
+
+            curr = curr.next;
+            currNewList = currNewList.next;
+        }
+        return result.next;
+    }
+
+
+
 
     /**
      * @auther 梁伟
@@ -297,6 +373,8 @@ public class LinkedListReversed {
 class ListNode {
     int val;
     ListNode next;
+    ListNode random;
+
     ListNode(int x) { val = x; }
 
     public static void print(ListNode root) {
