@@ -9,7 +9,7 @@ import java.util.Map;
 /**
  * @Date 2020/8/26 6:38
  * @Auther 梁伟
- * @Description 链表逆序,不申请额外空间
+ * @Description 所有链表习题
  */
 public class LinkedListReversed {
     public static void main(String[] args) {
