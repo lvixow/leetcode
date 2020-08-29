@@ -173,23 +173,23 @@ public class LinkedListReversed {
         }
         //只剩下两个链表，直接进行合并
         if (lists.length == 2) {
-            mergeTwoLists(lists[0], lists[1]);
+            return mergeTwoLists(lists[0], lists[1]);
         }
         //当所有链表被切分到只有1个或2个链表的时候即可完成合并。所以需要切分减小入参调用的规模。分治
         int mid = lists.length / 2;
-        ListNode[] list1 = new ListNode[mid];
-        ListNode[] list2 = new ListNode[lists.length - mid];
+        ListNode[] sub1Lists = new ListNode[mid];
+        ListNode[] sub2Lists = new ListNode[lists.length - mid];
 
-        for (int i = 0; i < lists.length; i++) {
-            if (i < mid) {
-                list1[i] = lists[i];
-            } else {
-                list2[i - mid] = lists[i];
-            }
+        for (int i = 0; i < mid; i++) {
+            sub1Lists[i] = lists[i];
+        }
+
+        for (int i = mid; i < lists.length; i++) {
+            sub2Lists[i-mid] = lists[i];
         }
         //返回切分后的结果
-        ListNode l1 = mergeKLists(list1);
-        ListNode l2 = mergeKLists(list2);
+        ListNode l1 = mergeKLists(sub1Lists);
+        ListNode l2 = mergeKLists(sub2Lists);
 
         //合并
         return mergeTwoLists(l1, l2);
