@@ -5,9 +5,9 @@ import java.util.Stack;
 /**
  * @Date 2020/8/30 17:01
  * @Auther 梁伟
- * @Description
+ * @Description 简单计算器功能
  */
-public class Solution {
+public class SimpleCalculate {
 
     public static void main(String[] args) {
         int result = calculate("1+121 - (14+(5-6))");
