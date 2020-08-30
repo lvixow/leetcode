@@ -56,10 +56,6 @@ public class CheckIsVaildOrder {
             }
         }
         //如果栈弹空则序列合法，否则不合法
-        if (stack.isEmpty()) {
-            return true;
-        } else {
-            return false;
-        }
+        return stack.isEmpty();
     }
 }
