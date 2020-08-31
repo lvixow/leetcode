@@ -9,9 +9,9 @@ import java.util.Stack;
  */
 public class MyQueue {
 
-    private Stack<Integer> dataStack = new Stack<>();
+    private Stack<Integer> inputStack = new Stack<>();
 
-    private Stack<Integer> tempStack = new Stack<>();
+    private Stack<Integer> outputStack = new Stack<>();
 
     /** Initialize your data structure here. */
     public MyQueue() {
@@ -20,32 +20,42 @@ public class MyQueue {
 
     /**
      * @auther 梁伟
-     * @Description 与队列模拟栈相似，本次采用2个栈模拟队列。添加的方式和模拟栈的时候相同
+     * @Description
      * @Date 2020/8/29 17:53
      * @Param [x]
      * @return void
      **/
     public void push(int x) {
-        tempStack.push(x);
-        tempStack.addAll(dataStack);
-        dataStack.clear();
-        dataStack.addAll(tempStack);
-        tempStack.clear();
+        inputStack.push(x);
     }
 
-    /** Removes the element from in front of queue and returns that element. */
+    /**
+     * 在获取元素时，使用临时栈调整到合适位置进行弹出
+     * @return
+     */
     public int pop() {
-        return dataStack.pop();
+        adjust(inputStack, outputStack);
+        return outputStack.pop();
     }
 
-    /** Get the front element. */
     public int peek() {
-        return dataStack.peek();
+        adjust(inputStack, outputStack);
+        return outputStack.peek();
+    }
+
+    private void adjust(Stack<Integer> inputStack, Stack<Integer> outputStack) {
+        if (!outputStack.isEmpty()) {
+            return;
+        }
+        //当输出的栈为空，则需要将输入栈中的内容放入输出栈完成对顺序的调整
+        while (!inputStack.isEmpty()) {
+            outputStack.push(inputStack.pop());
+        }
     }
 
     /** Returns whether the queue is empty. */
     public boolean empty() {
-        return dataStack.isEmpty();
+        return inputStack.isEmpty() && outputStack.isEmpty();
     }
 
     public static void main(String[] args) {
