@@ -7,9 +7,9 @@ package com.xiaoxiang.greedy;
  */
 public class SwingSequence {
     public static void main(String[] args) {
-        int[] arr1 = {1, 7, 5, 10, 13, 15, 10, 5, 16, 8};
+        int[] arr1 = {1, 17, 5, 10, 13, 15, 10, 5, 16, 8};
         int[] arr2 = {1,1,7,4,9,2,5};
-        int maxLength = wiggleMaxLength(arr2);
+        int maxLength = wiggleMaxLength(arr1);
         System.out.println(maxLength);
     }
 
@@ -40,15 +40,13 @@ public class SwingSequence {
         for (int i = 1; i < nums.length; i++) {
             switch (state) {
                 case begin:
+                    //当前后相等时，直接将前边舍掉，然后再去看下一个进行状态的确定
                     if (nums[i] > nums[i-1]) {
                         state = up;
                         maxLength++;
                     } else if (nums[i] < nums[i-1]){
                         state = down;
                         maxLength++;
-                    } else {
-                        //当前后相等时，直接将前边舍掉，然后再去看下一个进行状态的确定
-                        continue;
                     }
                     break;
                 case up:
