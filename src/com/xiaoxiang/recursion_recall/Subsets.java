@@ -1,6 +1,7 @@
 package com.xiaoxiang.recursion_recall;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -11,10 +12,13 @@ import java.util.List;
 public class Subsets {
 
     public static void main(String[] args) {
-        int[] nums1 = {1,2,3};
-        List<List<Integer>> subsets = subsets(nums1);
-        System.out.println(subsets);
+//        int[] nums1 = {1,2,3};
+//        List<List<Integer>> subsets = subsets(nums1);
+//        System.out.println(subsets);
 
+        int[] nums2 = {1,2,2};
+        List<List<Integer>> subsetsWithDup = subsetsWithDup(nums2);
+        System.out.println(subsetsWithDup);
 
 
 //        for (int i = 0; i < 8; i++) {
@@ -63,5 +67,43 @@ public class Subsets {
             result.add(item);
         }
         return result;
+    }
+
+    /**
+     * 找出所有元素不重复的子集
+     * @param nums  可能包含重复元素
+     * @return
+     */
+    public static List<List<Integer>> subsetsWithDup(int[] nums) {
+        List<List<Integer>> result = new ArrayList<>();
+        Arrays.sort(nums);
+        generate(nums,0, new ArrayList<>(), result);
+        return result;
+    }
+
+    /**
+     * 递归回溯寻找子集
+     * 输入: [1,2,2]
+     * 输出:[[2],[1],[1,2,2],[2,2],[1,2],[]]
+     * @param nums  去重后的集合
+     * @param result    结果集合
+     * @param start     当前要加入的元素索引
+     * @param temp  用于存放自己元素
+     */
+    private static void generate(int[] nums, int start, List<Integer> temp, List<List<Integer>> result) {
+        //每次进入先复制一份上一次递归的子集的结果，放入到总的结果集，然后再进行操作
+        result.add(new ArrayList<>(temp));
+
+        for (int i = start; i < nums.length; i++) {
+            //比较当前元素是否上一个元素重复,重复则跳过。该数组已经被排序，所以重复元素会相邻
+            // i > start保证了至少是开始遍历位置的后边一个元素或者更靠后的元素
+            if (i > start && nums[i] == nums[i -1]) {
+                continue;
+            }
+            //子集中加入当前元素
+            temp.add(nums[i]);
+            generate(nums,i + 1, temp, result);
+            temp.remove(temp.size() -1);
+        }
     }
 }
