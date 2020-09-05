@@ -8,13 +8,18 @@ import java.util.List;
  * @Date 2020/9/4 6:40
  * @Auther 梁伟
  * @Description 集合的所有子集
+ *
+ *  三种解法
+ * 1. 开始假设输出子集为空，每一步都向子集添加新的整数，并生成新的子集
+ * 2. 通过 回溯 生成所有给定长度的子集。
+ * 3. 位运算
  */
 public class Subsets {
 
     public static void main(String[] args) {
-//        int[] nums1 = {1,2,3};
-//        List<List<Integer>> subsets = subsets(nums1);
-//        System.out.println(subsets);
+        int[] nums1 = {1,2,3};
+        List<List<Integer>> subsets = subsets(nums1);
+        System.out.println(subsets);
 
         int[] nums2 = {1,2,2};
         List<List<Integer>> subsetsWithDup = subsetsWithDup(nums2);
@@ -54,13 +59,16 @@ public class Subsets {
             List<Integer> item = new ArrayList<>();
             //倒序遍历检测该子集存在哪些元素，通过位运算确定元素的值
             for (int j = 0; j < nums.length; j++) {
-                //i代表当前集合的一种子集，如011即{2,3}这个子集
+                //i代表当前集合的一种子集，如011即{1,2}这个子集。二进制中的索引和数组中的索引顺序相反，如二进制中的第三个位置对应数组中的第一个位置
                 //1 << j 构造一个类似于001、010、100这样和nums数组个数相关的数，用来检测是否包含指定元素
                 /*如1 << 1 即为010。011（当前子集） & 010（用于检测子集的数）= 010。结果中1所在的位置即为集合中数组元素的位置。
                 如nums[1,2,3]，当前子集011，使用010进行检测后，结果为010，确定了当前子集第二个位置是2。通过这样的检测对子集的所有位置进行确定，即可得出该子集的实际数字*/
                 // 在10进制中左移一位或右移一位即除10或乘10，二进制中也类似，只是变换的是2的倍数。
                 //如果该位置有当前检测的值，则&运算的二进制结果中因为包含1，所以结果肯定大于0
-                if ((i & (1 << j)) > 0) {
+//                if ((i & (1 << j)) != 0) {
+//                    item.add(nums[j]);
+//                }
+                if (((i >> j) & 1) ==1) {
                     item.add(nums[j]);
                 }
             }
@@ -77,7 +85,7 @@ public class Subsets {
     public static List<List<Integer>> subsetsWithDup(int[] nums) {
         List<List<Integer>> result = new ArrayList<>();
         Arrays.sort(nums);
-        generate(nums,0, new ArrayList<>(), result);
+        dfs(nums,0, new ArrayList<>(), result);
         return result;
     }
 
@@ -90,7 +98,7 @@ public class Subsets {
      * @param start     当前要加入的元素索引
      * @param temp  用于存放自己元素
      */
-    private static void generate(int[] nums, int start, List<Integer> temp, List<List<Integer>> result) {
+    private static void dfs(int[] nums, int start, List<Integer> temp, List<List<Integer>> result) {
         //每次进入先复制一份上一次递归的子集的结果，放入到总的结果集，然后再进行操作
         result.add(new ArrayList<>(temp));
 
@@ -102,7 +110,7 @@ public class Subsets {
             }
             //子集中加入当前元素
             temp.add(nums[i]);
-            generate(nums,i + 1, temp, result);
+            dfs(nums,i + 1, temp, result);
             temp.remove(temp.size() -1);
         }
     }
