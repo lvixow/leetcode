@@ -77,22 +77,39 @@ public class InverseNumber {
             temp[i] = indexes[i];
         }
 
+        //左边指针
         int i = left;
+        //右边指针
         int j = mid + 1;
+        //k是本次排序的区间，即对left到right区间的值进行排序
         for (int k = left; k <= right; k++) {
+            //左边已经没有元素可排序了
             if (i > mid) {
+                //将右边直接入排序序列，排序的是索引的位置。不改变原数组
                 indexes[k] = temp[j];
+                //右边指针右移到下一个元素
                 j++;
+                //右边已经没有元素可排序了
             } else if (j > right) {
+                //将左边的元素入排序序列，排序的是索引位置
                 indexes[k] = temp[i];
+                //左边元素指针右移
                 i++;
+                //因为左边还有，而右边没有元素了，说明右边的元素都早已进入排序序列，
+                //说明右边的这些元素比当前元素小，而这些元素正是当前元素的逆序数。即此时整个右边都是该元素的逆序数
                 res[indexes[k]] += (right - mid);
+
+                //当左边元素小于右边元素
             } else if (nums[temp[i]] <= nums[temp[j]]) {
                 // 注意：这里是 <= ，保证稳定性
+                //入排序序列，对索引排序
                 indexes[k] = temp[i];
+                //左边指针右移
                 i++;
+                //右边本次归并已经进入排序序列的都是该元素的逆序数，所以进行统计
                 res[indexes[k]] += (j - mid - 1);
             } else {
+                //右边的大于左边的，不统计逆序数，直接入排序序列，右边指针右移
                 indexes[k] = temp[j];
                 j++;
             }
