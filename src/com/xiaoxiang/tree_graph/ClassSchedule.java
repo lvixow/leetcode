@@ -9,21 +9,28 @@ import java.util.*;
  */
 public class ClassSchedule {
     public static void main(String[] args) {
-//        int[][] prerequisites = {{3, 0}, {3, 1}, {4, 1}, {4, 2}, {5, 3}, {5, 4}};
-        int[][] prerequisites = {{0, 1}, {1, 2}, {2, 0}};
-        boolean canFinish = canFinish(2, prerequisites);
+        int[][] prerequisites = {{3, 0}, {3, 1}, {4, 1}, {4, 2}, {5, 3}, {5, 4}};
+//        int[][] prerequisites = {{0, 1}, {1, 2}, {2, 0}};
+
+        Set<Integer> set = new HashSet<>();
+        for (int[] prerequisite : prerequisites) {
+            set.add(prerequisite[0]);
+            set.add(prerequisite[1]);
+        }
+
+        boolean canFinish = canFinish(set.size(), prerequisites);
         System.out.println(canFinish);
     }
 
     /**
      * @auther 梁伟
-     * @Description 使用拓扑排序判断有向图是否有环    [[1,0],[0,1]]
+     * @Description 使用拓扑排序判断有向图是否有环，记得根据使用的方便程度来合理设计数据结构
      * @Date 2020/9/11 5:47
      * @Param [numCourses, prerequisites] 课程数，课程数组表示课程间的依赖关系
      * @return boolean
      **/
     public static boolean canFinish(int numCourses, int[][] prerequisites) {
-        //统计每个课程依赖了哪些课程。数据结构：课程号---依赖的课程列表
+        /*//统计每个课程依赖了哪些课程。数据结构：课程号---依赖的课程列表
         Map<Integer, List<Integer>> inDegree = new HashMap<>();
         for (int i = 0; i < prerequisites.length; i++) {
             //当前课程如有依赖集合则添加，没有则新建
@@ -79,7 +86,55 @@ public class ClassSchedule {
             }
             count++;
         }
+        return count == totalCourseNum;*/
 
-        return count == totalCourseNum;
+
+
+
+
+
+        //记录当前顶点的入度，课程编号是数组索引
+        int[] indegrees = new int[numCourses];
+        //记录当前课程被哪些课程依赖，课程编号是索引。如adjacency.get(3)则代表编号为3的课程被哪些课程依赖
+        List<List<Integer>> adjacency = new ArrayList<>(numCourses);
+
+        //初始化adjacency
+        for (int i = 0; i < numCourses; i++) {
+            adjacency.add(new ArrayList<>());
+        }
+
+        //初始化每个顶点的入度和其邻接点。即依赖了几个课程和当前课程被哪些课程依赖
+        for (int i = 0; i < prerequisites.length; i++) {
+            int currentCourseNo = prerequisites[i][0];
+            int dependCourseNo = prerequisites[i][1];
+            //当前课程的依赖课程数加一
+            indegrees[currentCourseNo]++;
+            //添加依赖课程
+            adjacency.get(dependCourseNo).add(currentCourseNo);
+        }
+
+        //初始化将没有依赖其它任何课程的课程入队
+        Queue<Integer> queue = new LinkedList<>();
+        for (int i = 0; i < indegrees.length; i++) {
+            if (indegrees[i] == 0) {
+                queue.add(i);
+            }
+        }
+
+        //进行无依赖课程学习，并更新课程依赖情况。在有向无环图的情况下，直到所有课程学习完成
+        while (!queue.isEmpty()) {
+            Integer courseNo = queue.poll();
+            numCourses--;
+            //更新课程依赖情况，即分别为依赖当前课程的课程入度减一
+            List<Integer> dependList = adjacency.get(courseNo);
+            for (Integer dependCourseNo : dependList) {
+                indegrees[dependCourseNo]--;
+                if (indegrees[dependCourseNo] == 0) {
+                    queue.add(dependCourseNo);
+                }
+            }
+        }
+
+        return numCourses == 0;
     }
 }
