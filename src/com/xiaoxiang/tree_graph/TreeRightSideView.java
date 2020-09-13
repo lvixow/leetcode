@@ -1,5 +1,7 @@
 package com.xiaoxiang.tree_graph;
 
+import com.xiaoxiang.domain.TreeNode;
+
 import java.util.ArrayList;
 import java.util.List;
 

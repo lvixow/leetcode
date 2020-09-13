@@ -1,5 +1,7 @@
 package com.xiaoxiang.tree_graph;
 
+import com.xiaoxiang.domain.TreeNode;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
@@ -93,23 +95,3 @@ public class PathSum {
 }
 
 
-class TreeNode {
-    int val;
-    TreeNode left;
-    TreeNode right;
-
-    TreeNode() {}
-    TreeNode(int x) { val = x; }
-    TreeNode(int val, TreeNode left, TreeNode right) {
-        this.val = val;
-        this.left = left;
-        this.right = right;
-    }
-
-    @Override
-    public String toString() {
-        return "TreeNode{" +
-                "val=" + val +
-                '}';
-    }
-}
