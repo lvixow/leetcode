@@ -10,6 +10,9 @@ public class TreeNode {
     public TreeNode left;
     public TreeNode right;
 
+    //当前节点左子树节点数量
+    public int count;
+
     public TreeNode() {}
     public TreeNode(int x) { val = x; }
     public TreeNode(int val, TreeNode left, TreeNode right) {

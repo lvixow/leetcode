@@ -1,12 +1,18 @@
 package com.xiaoxiang.recursion_recall;
 
-import java.util.ArrayList;
+import com.xiaoxiang.domain.TreeNode;
+import java.util.Arrays;
 import java.util.List;
 
 /**
  * author:w_liangwei
  * date:2020/9/8
  * Description: LeetCode 315
+ *
+ *
+ * 1.归并排序，在合并的过程中可以统计逆序数
+ * 2.逆序将数组插入到二叉排序树中，每个节点维护一个左子树的节点数量。逆序插入是为了在插入时直接可以获得到当前数的逆序数
+ *
  */
 public class InverseNumber {
     public static void main(String[] args) {
@@ -15,8 +21,26 @@ public class InverseNumber {
         System.out.println(countSmaller);
     }
 
+
+
     public static List<Integer> countSmaller(int[] nums) {
-        List<Integer> result = new ArrayList<>();
+        //初始化一个integer数组，方便使用和最终结果转换
+        Integer[] result = new Integer[nums.length];
+        for (int i = 0; i < nums.length; i++) {
+            result[i] = 0;
+        }
+        //起始根结点为null
+        TreeNode root = null;
+        //逆序遍历nums依次加入到二叉搜索树，这样一旦出现后加入节点大于先前加入的节点时，此时就可以直接统计该元素对应的逆序数
+        for (int i = nums.length - 1; i >= 0; i--) {
+            root = insert(root, new TreeNode(nums[i]), result, i);
+        }
+        return Arrays.asList(result);
+
+
+
+
+        /*List<Integer> result = new ArrayList<>();
         int len = nums.length;
         if (len == 0) {
             return result;
@@ -36,8 +60,43 @@ public class InverseNumber {
         for (int i = 0; i < len; i++) {
             result.add(res[i]);
         }
-        return result;
+        return result;*/
     }
+
+    /**
+     *
+     * @param root  父节点
+     * @param node  子节点
+     * @param result  保存逆序数结果，使用下标获取该索引位置的逆序数个数
+     * @param index 该元素在数组中的索引
+     * @return  树的根结点
+     */
+    private static TreeNode insert(TreeNode root, TreeNode node, Integer[] result, int index) {
+        //根结点为null，当前子节点升级为根结点。因为不存在父子关系所以也不用继续执行插入
+        if (root == null) {
+            root = node;
+            return root;
+        }
+        //小于父节点则插入左子树，否则插入右子树
+        if (node.val <= root.val) {
+            root.count = root.count + 1;
+            root.left = insert(root.left, node, result, index);
+        } else {
+            //比插入节点node小的节点总数 = 上一次的结果resut[index] + 根结点的count + 根结点本身
+            result[index] = result[index] + root.count + 1;
+            root.right = insert(root.right, node, result, index);
+        }
+        return root;
+    }
+
+
+
+
+
+
+
+
+
 
     /**
      * 针对数组 nums 指定的区间 [left, right] 进行归并排序，在排序的过程中完成统计任务
