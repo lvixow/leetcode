@@ -20,7 +20,7 @@ public class MinWindow {
      * 遍历每个待匹配字符的计数器来查看子串是否符合要去的步骤，而变成了只需要比较count待匹配总次数
      * 是否为0就可以了
      * @Date 2020/9/17 7:40
-     * @Param [s, t]
+     * @Param [s, t] 源字符串，要匹配的子串
      * @return java.lang.String
      **/
     public static String minWindow(String s, String t) {

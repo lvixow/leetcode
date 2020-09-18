@@ -1,4 +1,4 @@
-package com.xiaoxiang.search;
+package com.xiaoxiang.binarySearch_binaryTree;
 
 
 import com.xiaoxiang.domain.TreeNode;
