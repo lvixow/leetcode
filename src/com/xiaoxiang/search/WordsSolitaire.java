@@ -8,7 +8,11 @@ import java.util.*;
  */
 public class WordsSolitaire {
     public static void main(String[] args) {
-        String[] arr = {"hot","dot","dog","lot","log","cog"};
+//        String[] arr = {"hot","dot","dog","lot","log","cog"};
+//        List<String> wordList = Arrays.asList(arr);
+//        int length = ladderLength("hit", "cog", wordList);
+
+        String[] arr = {"hot","dot","dog","lot","log"};
         List<String> wordList = Arrays.asList(arr);
         int length = ladderLength("hit", "cog", wordList);
         System.out.println(length);
@@ -23,7 +27,8 @@ public class WordsSolitaire {
      * @return int
      **/
     public static int ladderLength(String beginWord, String endWord, List<String> wordList) {
-        //将所有单词放入哈希表，方便用于判断组合后的单词是否是WordList中的单词
+        //单向BFS
+        /*//将所有单词放入哈希表，方便用于判断组合后的单词是否是WordList中的单词
         HashSet<String> allWordList = new HashSet<>(wordList);
 
         //广度优先时需要使用队列辅助遍历
@@ -76,6 +81,82 @@ public class WordsSolitaire {
                 }
             }
             //此时已经处理完了一层的所有词，相邻的层之间字符差一个，上边已经找到了下一层的所有词，所以步数加一
+            step++;
+        }
+        return 0;*/
+
+
+
+        //双向BFS，分别获取begin和end下一层的词，然后比较它两哪个词少，哪个少遍历哪个。
+        //则会形成一会是begin从end走，一会是end从begin走，最终相遇了，则代表BFS完成
+
+        //为两端准备队列
+        LinkedList<String> headQueue = new LinkedList<>();
+        LinkedList<String> tailQueue = new LinkedList<>();
+        //记录访问过的节点，用于防止图中循环和查看是否已经相遇
+        HashSet<String> headVisited = new HashSet<>();
+        HashSet<String> tailVisited = new HashSet<>();
+
+        headQueue.add(beginWord);
+        tailQueue.add(endWord);
+        headVisited.add(beginWord);
+        tailVisited.add(endWord);
+
+        //保存所有单词用于比较
+        HashSet<String> allWords = new HashSet<>(wordList);
+
+        int step = 1;
+        while (!headQueue.isEmpty() && !tailQueue.isEmpty()) {
+            //哪边的元素少，则处理哪边的。这样就达到了双向，方向随着元素的多少在变换，但不保证两边一边一次这样的顺序，
+            //有可能一边执行的次数多，一边执行的少。这个和他们自己各边的下一层元素多少有关
+            if (tailQueue.size() < headQueue.size()) {
+                //交换队列和访问数组，两个都要交换才能保持一致
+                LinkedList<String> temp = headQueue;
+                headQueue = tailQueue;
+                tailQueue = temp;
+
+                HashSet<String> temp1 = headVisited;
+                headVisited = tailVisited;
+                tailVisited = temp1;
+            }
+
+            //获得该层词的个数
+            int currentTierSize = headQueue.size();
+            while (currentTierSize > 0) {
+                //处理当前层的词，并对当前层词的个数减一
+                currentTierSize--;
+                String current = headQueue.poll();
+                char[] chars = current.toCharArray();
+                //每个字母用26个字母做替换
+                for (int i = 0; i < chars.length; i++) {
+                    //保存原先该位置的字母，用于还原
+                    char originalChar = chars[i];
+                    for (char j = 'a'; j <= 'z'; j++) {
+                        //如果替换的字母和原来相同则跳过
+                        if (chars[i] == j) {
+                            continue;
+                        }
+                        chars[i] = j;
+                        //获得下一层的词
+                        String nextWord = new String(chars);
+                        //判断该词是否在WordList中
+                        if (allWords.contains(nextWord)) {
+                            //如果该词已经访问过，则说明另一端已经访问过了。则BFS相遇了
+                            if (tailVisited.contains(nextWord)) {
+                                return step + 1;
+                            }
+                            //没有访问过，添加到下一层进行访问
+                            if (!headVisited.contains(nextWord)) {
+                                headQueue.add(nextWord);
+                                headVisited.add(nextWord);
+                            }
+                        }
+                    }
+                    //对该位置字母进行恢复，便于下一位置字母的替换
+                    chars[i] = originalChar;
+                }
+            }
+            //一层的单词处理完成，层数加一。层数和步数是一致的
             step++;
         }
         return 0;
