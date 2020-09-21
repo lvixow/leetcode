@@ -24,7 +24,7 @@ public class WordsSolitaire {
      * 可以构建一个图，求这两个顶点在图中的最短路径，可以使用BFS求解。使用双向BFS优化,分别从头尾同时进行
      * @Date 2020/9/20 20:22
      * @Param [beginWord, endWord, wordList]
-     * @return int
+     * @return int  最短路径长度
      **/
     public static int ladderLength(String beginWord, String endWord, List<String> wordList) {
         //单向BFS
@@ -165,5 +165,72 @@ public class WordsSolitaire {
             step++;
         }
         return 0;
+    }
+
+
+
+
+    /**
+     * 获得所有最短路径
+     * 采用双向BFS获取到达endWord所经过的所有层之间的邻接关系，如hit---hot,git。这些邻接关系将用于记录最短路径
+     * @param beginWord
+     * @param endWord
+     * @param wordList
+     * @return
+     */
+    public static List<List<String>> findLadders(String beginWord, String endWord, List<String> wordList) {
+        //放入所有单词
+        HashSet<String> allWords = new HashSet<>(wordList);
+
+        //获取到达endWord所在层前的所有邻接点
+        Map<String, Set<String>> allAdjoinRelation = bfs(allWords, beginWord, endWord);
+
+        return null;
+    }
+
+    /**
+     * 获得到达endword前的所有邻接关系
+     * @param allWords
+     * @param beginWord
+     * @param endWord
+     * @return
+     */
+    private static Map<String, Set<String>> bfs(HashSet<String> allWords, String beginWord, String endWord) {
+
+        LinkedList<String> headQueue = new LinkedList<>();
+        HashSet<String> headVisited = new HashSet<>();
+        LinkedList<String> tailQueue = new LinkedList<>();
+        HashSet<String> tailVisited = new HashSet<>();
+
+        headQueue.add(beginWord);
+        tailQueue.add(endWord);
+
+        while (!headQueue.isEmpty() && !tailQueue.isEmpty()) {
+            //比较前后两端哪端处理的单词少，并切换到单词少的一端进行处理
+            if (headQueue.size() > tailQueue.size()) {
+                LinkedList<String> temp = headQueue;
+                headQueue = tailQueue;
+                tailQueue = temp;
+            }
+
+            //处理当前层
+            int currentSize = headQueue.size();
+            while (currentSize > 0) {
+                currentSize--;
+                String currentWord = headQueue.poll();
+                //处理每个位置的字母
+                for (int i = 0; i < currentWord.length(); i++) {
+                    char[] chars = currentWord.toCharArray();
+                    //做26个字母替换
+                    for (char j = 'a'; j < 'z'; j++) {
+                        //做备份
+                        char orginChar = chars[i];
+
+
+                    }
+                }
+            }
+        }
+        return null;
     }
 }
