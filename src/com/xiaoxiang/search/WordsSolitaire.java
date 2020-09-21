@@ -90,6 +90,13 @@ public class WordsSolitaire {
         //双向BFS，分别获取begin和end下一层的词，然后比较它两哪个词少，哪个少遍历哪个。
         //则会形成一会是begin从end走，一会是end从begin走，最终相遇了，则代表BFS完成
 
+        //保存所有单词用于比较
+        HashSet<String> allWords = new HashSet<>(wordList);
+        //只有当endWord在WordList中才能找路径，否则路径不存在。就是说beginWord可以不在WordList，但是endWord必须在WordList中
+        if (!allWords.contains(endWord)) {
+            return 0;
+        }
+
         //为两端准备队列
         LinkedList<String> headQueue = new LinkedList<>();
         LinkedList<String> tailQueue = new LinkedList<>();
@@ -102,8 +109,6 @@ public class WordsSolitaire {
         headVisited.add(beginWord);
         tailVisited.add(endWord);
 
-        //保存所有单词用于比较
-        HashSet<String> allWords = new HashSet<>(wordList);
 
         int step = 1;
         while (!headQueue.isEmpty() && !tailQueue.isEmpty()) {
