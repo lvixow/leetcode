@@ -8,15 +8,18 @@ import java.util.*;
  */
 public class WordsSolitaire {
     public static void main(String[] args) {
-        String[] arr = {"hot","dot","dog","lot","log","cog"};
-        List<String> wordList = Arrays.asList(arr);
-        int length = ladderLength("hit", "cog", wordList);
+//        String[] arr = {"hot","dot","dog","lot","log","cog"};
+//        List<String> wordList = Arrays.asList(arr);
+//        int length = ladderLength("hit", "cog", wordList);
 
 //        String[] arr = {"hot","dot","dog","lot","log"};
 //        List<String> wordList = Arrays.asList(arr);
 //        int length = ladderLength("hit", "cog", wordList);
-        System.out.println(length);
+//        System.out.println(length);
 
+
+        String[] arr = {"hot","dot","dog","lot","log","cog"};
+        List<String> wordList = Arrays.asList(arr);
         List<List<String>> ladders = findLadders("hit", "cog", wordList);
         System.out.println(ladders);
     }
@@ -184,93 +187,108 @@ public class WordsSolitaire {
     public static List<List<String>> findLadders(String beginWord, String endWord, List<String> wordList) {
         //放入所有单词
         HashSet<String> allWords = new HashSet<>(wordList);
+        //结果集
+        List<List<String>> res = new ArrayList<>();
+        //如果endWord不在wordList则没有路径
+        if (!allWords.contains(endWord)) {
+            return res;
+        }
 
-        //获取到达endWord所在层前的所有邻接点
-        Map<String, Set<String>> allAdjoinRelation = bfs(allWords, beginWord, endWord);
+        //存放关系：每个单词可达的下层单词
+        Map<String, List<String>> mapTree = new HashMap<>();
+        HashSet<String> head = new HashSet<>(), tail = new HashSet<>();
 
-        return null;
+        head.add(beginWord);
+        tail.add(endWord);
+
+        if (buildTree(allWords, head, tail, mapTree, true)) {
+            dfs(mapTree, beginWord, endWord, res, new LinkedList<String>());
+        }
+        return res;
     }
 
     /**
-     * 获得到达endword前的所有邻接关系
-     * @param allWords
-     * @param beginWord
-     * @param endWord
-     * @return
-     */
-    private static Map<String, Set<String>> bfs(HashSet<String> allWords, String beginWord, String endWord) {
-
-        LinkedList<String> headQueue = new LinkedList<>();
-        HashSet<String> headVisited = new HashSet<>();
-        LinkedList<String> tailQueue = new LinkedList<>();
-        HashSet<String> tailVisited = new HashSet<>();
-
-        headQueue.add(beginWord);
-        tailQueue.add(endWord);
-        headVisited.add(beginWord);
-        tailVisited.add(endWord);
-
-        Map<String, Set<String>> result = new HashMap<>();
-        //为了保证邻接词典的构建顺序是一定的，而BFS是双向的，所以需要判断是否转向
-        boolean veer = true;
-        while (!headQueue.isEmpty() && !tailQueue.isEmpty()) {
-            //比较前后两端哪端处理的单词少，并切换到单词少的一端进行处理
-            if (headQueue.size() > tailQueue.size()) {
-                LinkedList<String> temp = headQueue;
-                headQueue = tailQueue;
-                tailQueue = temp;
-
-                HashSet<String> temp1 = headVisited;
-                headVisited = tailVisited;
-                tailVisited = temp1;
-                veer = !veer;
-            }
-
-            //处理当前层
-            int currentSize = headQueue.size();
-            while (currentSize > 0) {
-                currentSize--;
-                String currentWord = headQueue.poll();
-                //处理每个位置的字母
-                for (int i = 0; i < currentWord.length(); i++) {
-                    char[] chars = currentWord.toCharArray();
-                    //做备份
-                    char orginChar = chars[i];
-                    //做26个字母替换
-                    for (char j = 'a'; j < 'z'; j++) {
-                        if (orginChar == j) {
-                            continue;
-                        }
-                        chars[i] = j;
-                        String nextWord = new String(chars);
-                        //nextWord在词典中
-                        if (allWords.contains(nextWord)) {
-                            //发生过转向则交换词的构建顺序
-                            if (!veer) {
-                                String temp = currentWord;
-                                currentWord = nextWord;
-                                nextWord = temp;
-                            }
-                            //加入到邻接关系
-                            result.computeIfAbsent(currentWord, a -> new HashSet<>());
-                            result.get(currentWord).add(nextWord);
-                            //相遇了
-                            if (tailVisited.contains(nextWord)) {
-                                return result;
-                            }
-                            //没有访问过
-                            if (!headVisited.contains(nextWord)) {
-                                headQueue.add(nextWord);
-                                headVisited.add(nextWord);
-                            }
-                        }
-                    }
-                    chars[i] = orginChar;
-                }
+     * @auther 梁伟
+     * @Description 使用DFS回溯法多条寻找路径
+     * @Date 2020/9/23 7:04
+     * @Param [mapTree, beginWord, endWord, res, path]
+     * @return void
+     **/
+    private static void dfs(Map<String, List<String>> mapTree, String beginWord, String endWord, List<List<String>> res, LinkedList<String> path) {
+        //前进，添加当前位置到路径中
+        path.add(beginWord);
+        //如果路径已到达终点，则返回结果
+        if (beginWord.equals(endWord)) {
+            res.add(new ArrayList<>(path));
+            //移除本次所走的位置，返回到上一层进行回溯
+            path.removeLast();
+            return;
+        }
+        //如果本次所走的位置，不是最终位置，则继续往前走
+        if (mapTree.containsKey(beginWord)) {
+            for (String word : mapTree.get(beginWord)) {
+                dfs(mapTree, word, endWord, res, path);
             }
         }
+        //回退，退出当前位置
+        path.removeLast();
+    }
 
-        System.out.println(result);
-        return null;
+    /**
+     * @auther 梁伟
+     * @Description
+     * @Date 2020/9/23 6:29
+     * @Param [allWords, head, tail, mapTree, isFront] 所有单词，从头出发的，从尾出发的，每个词可到达的下层的词，是否构建方向发生了变化
+     * @return boolean 是否相遇了，没相遇则没有可到达endWord的路径
+     **/
+    private static boolean buildTree(HashSet<String> allWords, Set<String> head, Set<String> tail, Map<String, List<String>> mapTree, boolean isFront) {
+        //当下一层没有词时停止探索
+        if (head.size() == 0) {
+            return false;
+        }
+        //转向从少的一边开始探索
+        if (head.size() > tail.size()) {
+            return buildTree(allWords, tail, head, mapTree, !isFront);
+        }
+        //因为要对head中的词做构建，所以从allWords中移除。代表已经构建过了，防止下次重复构建
+        allWords.removeAll(head);
+        //标记本层是否已到达目标单词
+        boolean isMeet = false;
+        //记录本层所访问的单词
+        Set<String> nextLevel = new HashSet<>();
+        for (String word : head) {
+            char[] chars = word.toCharArray();
+            for (int i = 0; i < chars.length; i++) {
+                char temp = chars[i];
+                for (char ch = 'a'; ch <= 'z'; ch++) {
+                    chars[i] = ch;
+                    String str = String.valueOf(chars);
+                    if (allWords.contains(str)) {
+                        //添加到一下层要访问的词
+                        nextLevel.add(str);
+                        //根据访问顺序，添加层级对应关系：始终保持从上层到下层的存储存储关系
+                        //true: 从上往下探索：word -> str
+                        //false: 从下往上探索：str -> word（查找到的 str 是 word 上层的单词）
+                        String key = isFront ? word : str;
+                        String nextWord = isFront ? str : word;
+                        //判断是否遇见目标单词
+                        if (tail.contains(str)) {
+                            isMeet = true;
+                        }
+                        if (!mapTree.containsKey(key)) {
+                            mapTree.put(key, new ArrayList<>());
+                        }
+                        //将可达词加入到关系映射
+                        mapTree.get(key).add(nextWord);
+                    }
+                }
+                chars[i] = temp;
+            }
+            //如果已经相遇了，则停止单词关系构建
+            if (isMeet) {
+                return true;
+            }
+        }
+        return buildTree(allWords, nextLevel, tail, mapTree, isFront);
     }
 }
