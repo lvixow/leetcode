@@ -8,14 +8,17 @@ import java.util.*;
  */
 public class WordsSolitaire {
     public static void main(String[] args) {
-//        String[] arr = {"hot","dot","dog","lot","log","cog"};
-//        List<String> wordList = Arrays.asList(arr);
-//        int length = ladderLength("hit", "cog", wordList);
-
-        String[] arr = {"hot","dot","dog","lot","log"};
+        String[] arr = {"hot","dot","dog","lot","log","cog"};
         List<String> wordList = Arrays.asList(arr);
         int length = ladderLength("hit", "cog", wordList);
+
+//        String[] arr = {"hot","dot","dog","lot","log"};
+//        List<String> wordList = Arrays.asList(arr);
+//        int length = ladderLength("hit", "cog", wordList);
         System.out.println(length);
+
+        List<List<String>> ladders = findLadders("hit", "cog", wordList);
+        System.out.println(ladders);
     }
 
     /**
@@ -204,13 +207,23 @@ public class WordsSolitaire {
 
         headQueue.add(beginWord);
         tailQueue.add(endWord);
+        headVisited.add(beginWord);
+        tailVisited.add(endWord);
 
+        Map<String, Set<String>> result = new HashMap<>();
+        //为了保证邻接词典的构建顺序是一定的，而BFS是双向的，所以需要判断是否转向
+        boolean veer = true;
         while (!headQueue.isEmpty() && !tailQueue.isEmpty()) {
             //比较前后两端哪端处理的单词少，并切换到单词少的一端进行处理
             if (headQueue.size() > tailQueue.size()) {
                 LinkedList<String> temp = headQueue;
                 headQueue = tailQueue;
                 tailQueue = temp;
+
+                HashSet<String> temp1 = headVisited;
+                headVisited = tailVisited;
+                tailVisited = temp1;
+                veer = !veer;
             }
 
             //处理当前层
@@ -221,16 +234,43 @@ public class WordsSolitaire {
                 //处理每个位置的字母
                 for (int i = 0; i < currentWord.length(); i++) {
                     char[] chars = currentWord.toCharArray();
+                    //做备份
+                    char orginChar = chars[i];
                     //做26个字母替换
                     for (char j = 'a'; j < 'z'; j++) {
-                        //做备份
-                        char orginChar = chars[i];
-
-
+                        if (orginChar == j) {
+                            continue;
+                        }
+                        chars[i] = j;
+                        String nextWord = new String(chars);
+                        //nextWord在词典中
+                        if (allWords.contains(nextWord)) {
+                            //发生过转向则交换词的构建顺序
+                            if (!veer) {
+                                String temp = currentWord;
+                                currentWord = nextWord;
+                                nextWord = temp;
+                            }
+                            //加入到邻接关系
+                            result.computeIfAbsent(currentWord, a -> new HashSet<>());
+                            result.get(currentWord).add(nextWord);
+                            //相遇了
+                            if (tailVisited.contains(nextWord)) {
+                                return result;
+                            }
+                            //没有访问过
+                            if (!headVisited.contains(nextWord)) {
+                                headQueue.add(nextWord);
+                                headVisited.add(nextWord);
+                            }
+                        }
                     }
+                    chars[i] = orginChar;
                 }
             }
         }
+
+        System.out.println(result);
         return null;
     }
 }
