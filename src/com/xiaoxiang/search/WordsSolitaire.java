@@ -202,7 +202,7 @@ public class WordsSolitaire {
         tail.add(endWord);
 
         if (buildTree(allWords, head, tail, mapTree, true)) {
-            dfs(mapTree, beginWord, endWord, res, new LinkedList<String>());
+            dfs(mapTree, beginWord, endWord, res, new LinkedList<>());
         }
         return res;
     }
@@ -284,10 +284,10 @@ public class WordsSolitaire {
                 }
                 chars[i] = temp;
             }
-            //如果已经相遇了，则停止单词关系构建
-            if (isMeet) {
-                return true;
-            }
+        }
+        //如果已经相遇了，则停止单词关系构建。即使相遇了也需要将本层的所有词构建完成，因为此时只找到一条路径，有可能存在多条最短路径
+        if (isMeet) {
+            return true;
         }
         return buildTree(allWords, nextLevel, tail, mapTree, isFront);
     }
