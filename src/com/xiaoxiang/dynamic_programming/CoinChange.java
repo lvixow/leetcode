@@ -9,9 +9,9 @@ import java.util.Arrays;
  */
 public class CoinChange {
     public static void main(String[] args) {
-//        int[] coins = {1, 2, 5};
-        int[] coins = {2};
-        int coinChange = coinChange(coins, 3);
+        int[] coins = {1, 2, 5};
+//        int[] coins = {2};
+        int coinChange = coinChange(coins, 11);
         System.out.println(coinChange);
     }
 
