@@ -25,7 +25,8 @@ public class FindCircleNum {
 
     public int findCircleNum(int[][] M) {
         for (int i = 0; i < M.length; i++) {
-            for (int j = 0; j < M[0].length; j++) {
+            //内循环直接从i开始就可以了，因为是对称矩阵啊
+            for (int j = 0; j < i; j++) {
                 //存在朋友关系则合并到同一集合
                 if (M[i][j] == 1) {
                     disjointSet.union(i, j, disjointSet.parent, disjointSet.rank);
