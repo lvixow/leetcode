@@ -19,49 +19,18 @@ public class WordDictionary {
 
     public static void main(String[] args) {
         WordDictionary wordDictionary = new WordDictionary();
-//        wordDictionary.addWord("bad");
-//        wordDictionary.addWord("dad");
-//        wordDictionary.addWord("mad");
-//
-//        wordDictionary.addWord("WordDictionary");
-//        wordDictionary.addWord("addWord");
-
-
-
-//        System.out.println(wordDictionary.search("pad"));// return False
-//        System.out.println(wordDictionary.search("bad")); // return True
-//        System.out.println(wordDictionary.search(".ad")); // return True
-//        System.out.println(wordDictionary.search("b..")); // return True
-//        System.out.println(wordDictionary.search("W."));
-
-
-
-
-
-
-        //预期查找结果: [null,null,null,null,null,false,false,null,true,true,false,false,true,false]
-        String[] addArr = {"WordDictionary", "addWord", "addWord", "addWord", "addWord", "search", "search", "addWord", "search", "search", "search", "search", "search", "search"};
-        String[] searchArr = {"", "at", "and", "an", "add", "a", ".at", "bat", ".at", "an.", "a.d.", "b.", "a.d", "."};
-
-        for (String s : addArr) {
-            try {
-                wordDictionary.addWord(s);
-            } catch (Exception e) {
-                System.out.println(s);
-                e.printStackTrace();
-                break;
-            }
-        }
+        wordDictionary.addWord("bad");
+        wordDictionary.addWord("dad");
+        wordDictionary.addWord("mad");
 
         List<String> wordList = new ArrayList<>();
         root.getAllWords(new ArrayDeque<>(), wordList);
         System.out.println(wordList);
 
-        for (String s : searchArr) {
-            System.out.print(wordDictionary.search(s) + "\t");
-        }
-        System.out.println();
-        System.out.println(addArr.length);
+        System.out.println(wordDictionary.search("pad"));// return False
+        System.out.println(wordDictionary.search("bad")); // return True
+        System.out.println(wordDictionary.search(".ad")); // return True
+        System.out.println(wordDictionary.search("b..")); // return True
     }
 
     public WordDictionary() {
@@ -76,7 +45,7 @@ public class WordDictionary {
         for (int i = 0; i < word.length(); i++) {
             char curr = word.charAt(i);
             //计算当前待插入字母对应在字典树中当前层的下标
-            int pos = curr - 'A';
+            int pos = curr - 'a';
             //如果当前字母字典树中不存在，则插入
             if (node.child[pos] == null) {
                 node.child[pos] = new Node();
@@ -104,18 +73,15 @@ public class WordDictionary {
      * @return
      */
     public boolean match(Node node, String word, int index) {
-        //要匹配的索引越界，说明所有字符已经匹配完成。由于前边一旦有匹配不上的就会返回false，能走到最后一个字符说明前边全部都已经匹配成功了
-        if (word.isEmpty()) {
-            return false;
-        }
+        //当要查找的index刚好越界，此时的node恰好是最后一个字母所对应的node。如果能走到最后一个字符说明前边的字符全部匹配上了，只需要判断最后一个字符是不是end，如果是end就是一个单词，不是说明就不是一个单词
         if (index == word.length()) {
-            return true;
+            return node.isEnd;
         }
         char curr = word.charAt(index);
         //如果当前字母是 "." 那么直接跳到下一个字母判断
         if (curr == '.') {
             //跳过通配符，看node的子节点中是否有下一个字符
-            for (int i = 0; i < 58; i++) {
+            for (int i = 0; i < 26; i++) {
                 if (node.child[i] != null && match(node.child[i], word, index+1)) {
                     return true;
                 }
@@ -123,7 +89,7 @@ public class WordDictionary {
             return false;
         } else {
             //当前字符是a-z
-            int pos = curr - 'A';
+            int pos = curr - 'a';
             if (node.child[pos] == null) {
                 return false;
             }
@@ -141,19 +107,18 @@ class Node {
     boolean isEnd;
 
     public Node() {
-        //由于加入了大写字母，而且大写和小写的ASCII码间包含了一部分特殊字符，所以需要开辟58的空间
-        this.child = new Node[58];
+        this.child = new Node[26];
         this.isEnd = false;
     }
 
     public void getAllWords(Deque<Character> stack, List<String> wordList) {
         Node node = this;
-        for (int i = 0; i < 58; i++) {
+        for (int i = 0; i < 26; i++) {
             if (node.child[i] == null) {
                 continue;
             }
             //当前子节点字符入栈
-            stack.push((char) (i + 'A'));
+            stack.push((char) (i + 'a'));
             //如果是end说明是一个单词的结尾，所以这时候应该将单词入最终结果集
             if (node.child[i].isEnd) {
                 Iterator<Character> iterator = stack.descendingIterator();
