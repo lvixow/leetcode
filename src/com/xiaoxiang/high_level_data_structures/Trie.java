@@ -46,34 +46,35 @@ public class Trie {
         n11.isEnd = true;
 
 
-        TrieNode.insert(root, "abfde");
+        root.insert("abfde");
 
         List<String> wordList = new ArrayList<>();
-        TrieNode.getAllWords(root, new ArrayDeque<>(), wordList);
+        root.getAllWords(new ArrayDeque<>(), wordList);
         System.out.println(wordList);
 
-        boolean search = TrieNode.search(root, "abcde");
+        boolean search = root.search("abcde");
         System.out.println(search);
 
-        boolean startWith = TrieNode.startWith(root, "ef");
+        boolean startWith = root.startWith("ef");
         System.out.println(startWith);
 
-//        TrieNode.preOrderTrie(root, 0);
-
+//        root.preOrderTrie(0);
     }
-
 }
 
 class TrieNode {
     //每个节点可以是26个字母中的任何一个，所以子节点有26种
-    TrieNode[] child = new TrieNode[26];
+    TrieNode[] child;
     //默认不是结尾节点
-    boolean isEnd = false;
+    boolean isEnd;
 
-    public static void preOrderTrie(TrieNode node, int layer) {
-        if (node == null) {
-            return;
-        }
+    public TrieNode() {
+        this.child = new TrieNode[26];
+        this.isEnd = false;
+    }
+
+    public void preOrderTrie(int layer) {
+        TrieNode node = this;
         //遍历26个子节点
         for (int i = 0; i < 26; i++) {
             if (node.child[i] == null) {
@@ -90,7 +91,7 @@ class TrieNode {
                 System.out.print("(end)");
             }
             System.out.println();
-            preOrderTrie(node.child[i], layer + 1);
+            node.child[i].preOrderTrie(layer + 1);
         }
     }
 
@@ -102,10 +103,8 @@ class TrieNode {
      * @Param [node, stack, wordList]
      * @return void
      **/
-    public static void getAllWords(TrieNode node, Deque<Character> stack, List<String> wordList) {
-        if (node == null) {
-            return;
-        }
+    public void getAllWords(Deque<Character> stack, List<String> wordList) {
+        TrieNode node = this;
         for (int i = 0; i < 26; i++) {
             if (node.child[i] == null) {
                 continue;
@@ -123,14 +122,15 @@ class TrieNode {
                 wordList.add(sb.toString());
             }
             //处理当前子节点的下一层子节点
-            getAllWords(node.child[i], stack, wordList);
+            node.child[i].getAllWords(stack, wordList);
             //当前子节点处理完成，弹出当前子节点
             stack.poll();
         }
     }
 
 
-    public static void insert(TrieNode node, String word) {
+    public void insert(String word) {
+        TrieNode node = this;
         if (word.isEmpty()) {
             return;
         }
@@ -148,8 +148,9 @@ class TrieNode {
         node.isEnd = true;
     }
 
-    public static boolean search(TrieNode node, String word) {
-        if (node == null || word.isEmpty()) {
+    public boolean search(String word) {
+        TrieNode node = this;
+        if (word.isEmpty()) {
             return false;
         }
         for (int i = 0; i < word.length(); i++) {
@@ -168,12 +169,12 @@ class TrieNode {
 
     /**
      * 查找是否存在指定前缀的单词,大致与search方法相同
-     * @param node
      * @param prefix
      * @return
      */
-    public static boolean startWith(TrieNode node, String prefix) {
-        if (node == null || prefix.isEmpty()) {
+    public boolean startWith(String prefix) {
+        TrieNode node = this;
+        if (prefix.isEmpty()) {
             return false;
         }
         for (int i = 0; i < prefix.length(); i++) {
