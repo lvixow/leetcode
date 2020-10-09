@@ -5,7 +5,7 @@ import java.util.*;
 /**
  * @Date 2020/10/9 5:40
  * @Auther 梁伟
- * @Description 字典树
+ * @Description 字典树 LeetCode208
  */
 public class Trie {
     public static void main(String[] args) {

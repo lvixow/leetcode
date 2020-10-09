@@ -1,37 +1,174 @@
 package com.xiaoxiang.high_level_data_structures;
 
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Deque;
+import java.util.Iterator;
+import java.util.List;
+
 /**
  * author:w_liangwei
  * date:2020/10/9
  * Description: 词典 LeetCode 211
  *
- *  * WordDictionary obj = new WordDictionary();
- *  * obj.addWord(word);
- *  * boolean param_2 = obj.search(word);
  */
 public class WordDictionary {
 
-    TrieNode root;
+    //维护一个字典树的根结点
+    static Node root;
 
     public static void main(String[] args) {
+        WordDictionary wordDictionary = new WordDictionary();
+//        wordDictionary.addWord("bad");
+//        wordDictionary.addWord("dad");
+//        wordDictionary.addWord("mad");
+//
+//        wordDictionary.addWord("WordDictionary");
+//        wordDictionary.addWord("addWord");
 
 
+
+//        System.out.println(wordDictionary.search("pad"));// return False
+//        System.out.println(wordDictionary.search("bad")); // return True
+//        System.out.println(wordDictionary.search(".ad")); // return True
+//        System.out.println(wordDictionary.search("b..")); // return True
+//        System.out.println(wordDictionary.search("W."));
+
+
+
+
+
+
+        //预期查找结果: [null,null,null,null,null,false,false,null,true,true,false,false,true,false]
+        String[] addArr = {"WordDictionary", "addWord", "addWord", "addWord", "addWord", "search", "search", "addWord", "search", "search", "search", "search", "search", "search"};
+        String[] searchArr = {"", "at", "and", "an", "add", "a", ".at", "bat", ".at", "an.", "a.d.", "b.", "a.d", "."};
+
+        for (String s : addArr) {
+            try {
+                wordDictionary.addWord(s);
+            } catch (Exception e) {
+                System.out.println(s);
+                e.printStackTrace();
+                break;
+            }
+        }
+
+        List<String> wordList = new ArrayList<>();
+        root.getAllWords(new ArrayDeque<>(), wordList);
+        System.out.println(wordList);
+
+        for (String s : searchArr) {
+            System.out.print(wordDictionary.search(s) + "\t");
+        }
+        System.out.println();
+        System.out.println(addArr.length);
     }
 
-
-    /** Initialize your data structure here. */
     public WordDictionary() {
-        root = new TrieNode();
+        root = new Node();
     }
 
-    /** Adds a word into the data structure. */
     public void addWord(String word) {
-//        root.insert(root, word);
+        Node node = root;
+        if (word.isEmpty()) {
+            return;
+        }
+        for (int i = 0; i < word.length(); i++) {
+            char curr = word.charAt(i);
+            //计算当前待插入字母对应在字典树中当前层的下标
+            int pos = curr - 'A';
+            //如果当前字母字典树中不存在，则插入
+            if (node.child[pos] == null) {
+                node.child[pos] = new Node();
+            }
+            //node向下一层移动，插入下一个字母。即插入字母和层序相对应
+            node = node.child[pos];
+        }
+        node.isEnd = true;
     }
 
-    /** Returns if the word is in the data structure. A word could contain the dot character '.' to represent any one letter. */
+    /**
+     * 在原有字典树的基础上考虑对通配符进行处理
+     * @param word
+     * @return
+     */
     public boolean search(String word) {
+        return match(root, word, 0);
+    }
 
-        return false;
+    /**
+     * 在当前节点的子节点中查找当前字符
+     * @param node 当前待处理节点
+     * @param word 当前单词
+     * @param index 当前处理的字符索引
+     * @return
+     */
+    public boolean match(Node node, String word, int index) {
+        //要匹配的索引越界，说明所有字符已经匹配完成。由于前边一旦有匹配不上的就会返回false，能走到最后一个字符说明前边全部都已经匹配成功了
+        if (word.isEmpty()) {
+            return false;
+        }
+        if (index == word.length()) {
+            return true;
+        }
+        char curr = word.charAt(index);
+        //如果当前字母是 "." 那么直接跳到下一个字母判断
+        if (curr == '.') {
+            //跳过通配符，看node的子节点中是否有下一个字符
+            for (int i = 0; i < 58; i++) {
+                if (node.child[i] != null && match(node.child[i], word, index+1)) {
+                    return true;
+                }
+            }
+            return false;
+        } else {
+            //当前字符是a-z
+            int pos = curr - 'A';
+            if (node.child[pos] == null) {
+                return false;
+            }
+            //匹配下一个字母
+            return match(node.child[pos], word, index+1);
+        }
     }
 }
+
+
+class Node {
+    //每个节点可以是26个字母中的任何一个，所以子节点有26种
+    Node[] child;
+    //默认不是结尾节点
+    boolean isEnd;
+
+    public Node() {
+        //由于加入了大写字母，而且大写和小写的ASCII码间包含了一部分特殊字符，所以需要开辟58的空间
+        this.child = new Node[58];
+        this.isEnd = false;
+    }
+
+    public void getAllWords(Deque<Character> stack, List<String> wordList) {
+        Node node = this;
+        for (int i = 0; i < 58; i++) {
+            if (node.child[i] == null) {
+                continue;
+            }
+            //当前子节点字符入栈
+            stack.push((char) (i + 'A'));
+            //如果是end说明是一个单词的结尾，所以这时候应该将单词入最终结果集
+            if (node.child[i].isEnd) {
+                Iterator<Character> iterator = stack.descendingIterator();
+                StringBuilder sb = new StringBuilder();
+                while (iterator.hasNext()) {
+                    sb.append(iterator.next());
+                }
+                //加入单词最终结果集
+                wordList.add(sb.toString());
+            }
+            //处理当前子节点的下一层子节点
+            node.child[i].getAllWords(stack, wordList);
+            //当前子节点处理完成，弹出当前子节点
+            stack.poll();
+        }
+    }
+}
+
