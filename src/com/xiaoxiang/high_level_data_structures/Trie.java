@@ -52,7 +52,14 @@ public class Trie {
         TrieNode.getAllWords(root, new ArrayDeque<>(), wordList);
         System.out.println(wordList);
 
-        TrieNode.preOrderTrie(root, 0);
+        boolean search = TrieNode.search(root, "abcde");
+        System.out.println(search);
+
+        boolean startWith = TrieNode.startWith(root, "ef");
+        System.out.println(startWith);
+
+//        TrieNode.preOrderTrie(root, 0);
+
     }
 
 }
@@ -139,5 +146,43 @@ class TrieNode {
             node = node.child[pos];
         }
         node.isEnd = true;
+    }
+
+    public static boolean search(TrieNode node, String word) {
+        if (node == null || word.isEmpty()) {
+            return false;
+        }
+        for (int i = 0; i < word.length(); i++) {
+            //计算当前字母在该层子树中处于第几个索引，并判断其是否存在
+            int pos = word.charAt(i) - 'a';
+            //如果该层不存在该字母，返回false
+            if (node.child[pos] == null) {
+                return false;
+            }
+            //字母移动到下一个，node下移一层
+            node = node.child[pos];
+        }
+        //Word中的全部字母匹配上了后，判断最后一个字母是否是end，只有是end才说明该单词存在
+        return node.isEnd;
+    }
+
+    /**
+     * 查找是否存在指定前缀的单词,大致与search方法相同
+     * @param node
+     * @param prefix
+     * @return
+     */
+    public static boolean startWith(TrieNode node, String prefix) {
+        if (node == null || prefix.isEmpty()) {
+            return false;
+        }
+        for (int i = 0; i < prefix.length(); i++) {
+            int pos = prefix.charAt(i) - 'a';
+            if (node.child[pos] == null) {
+                return false;
+            }
+            node = node.child[pos];
+        }
+        return true;
     }
 }
