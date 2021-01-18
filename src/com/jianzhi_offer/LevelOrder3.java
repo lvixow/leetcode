@@ -12,6 +12,12 @@ import java.util.Queue;
  * author:w_liangwei
  * date:2021/1/18
  * Description:
+ *
+ * 解法1：还是采用原来的解法，只是将偶数层进行反转
+ * 解法2：对奇数层和偶数层进行分别加入结果集，从左到右的层节点也按照先左节点再右节点入队，从右到左的层节点也按照先右节点再左节点入队，
+ * 不然会发生节点间有序，但是节点内部的自己节点却发生了反转。奇数层子节点加入到对头，偶数层子节点加入到队尾，处理奇数层时去队头取，偶数层到队尾取。相当于奇数层和偶数层有约定一样
+ * 都把对方说需要的节点放到了约定的地方
+ *
  */
 public class LevelOrder3 {
     public static void main(String[] args) {
@@ -42,7 +48,7 @@ public class LevelOrder3 {
 
     public static List<List<Integer>> levelOrder(TreeNode root) {
         List<List<Integer>> res = new ArrayList<>();
-        //解法一：直接将偶数层进行反转
+        //直接将偶数层进行反转
         if (root == null) return res;
         Queue<TreeNode> queue = new LinkedList();
         queue.offer(root);
