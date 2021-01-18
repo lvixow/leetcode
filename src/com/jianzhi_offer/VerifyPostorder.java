@@ -41,7 +41,8 @@ public class VerifyPostorder {
         while (postOrder[k] < root) k++;
         //记录左子树和右子树的分隔点
         int mid = k;
-        //判断右子树是否都比根节点大
+        //判断右子树是否都比根节点大，当k在向后移动的过程中，逐渐向root靠近，因为root在最右端，
+        //当k到达root的位置时，此时postOrder[k] == root，所以必然会跳出循环，无需额外条件限制
         while (postOrder[k] > root) k++;
         //如果k和右端点相等，说明指针顺利走到了数的最后一个节点，即此时k和right都指向根节点
         //当前树检查符合要求后，继续来检查它的左子树和右子树
