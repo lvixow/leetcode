@@ -23,7 +23,18 @@ import java.util.Arrays;
  *  4. 基准数位置比k-1大，说明左侧的区间包含前k个元素和其它不是前k个的元素，所以需要进一步向左查找缩小区间范围
  *
  *
+ * topK，不难；其思路优化过程，不简单：
+ *     全局排序，O(n*lg(n))
+ *     局部排序，只排序TopK个数，O(n*k)
+ *     堆，TopK个数也不排序了，O(n*lg(k))
+ *     分治法，每个分支“都要”递归，例如：快速排序，O(n*lg(n))
+ *     减治法，“只要”递归一个分支，例如：二分查找O(lg(n))，随机选择O(n)
+ *     TopK的另一个解法：随机选择+partition
  *
+ *
+ * 一个对思路很有启发的地址
+ *  https://www.sohu.com/a/255145095_178889
+ *  http://blog.chinaunix.net/uid-26548237-id-3513260.html
  */
 public class GetLeastNumbers {
     public static void main(String[] args) {
